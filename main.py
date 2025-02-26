@@ -3,9 +3,9 @@ import threading
 import os
 import wx, openpyxl, time, wx._xml, random, sys, uuid, requests, csv
 import wx.richtext as rt
+import driver, gemini
 
-import driver
-
+thread_running = False
 app = wx.App(False)
 frame = wx.Frame(None, wx.ID_ANY, "PostingFacebook")
 max_time = 2100
@@ -15,7 +15,7 @@ min_time = 900
 thread_end = False
 account_index = 1
 post_check = True
-
+csv_files = []
 
 def append_log(log):
     current_time = time.strftime("[%Y-%m-%d %H:%M:%S] ", time.localtime())
@@ -36,14 +36,10 @@ def append_log(log):
     log_text_widget.ShowPosition(log_text_widget.GetLastPosition())
 
 def load_csv():
-    global csv_files, csv_num
+    global csv_files
+    csv_num = 0
     csv_files.clear()
 
-    # 현재 스크립트 파일의 경로를 가져오기
-    # script_dir = os.path.dirname(os.path.realpath(__file__))
-    # script_dir = os.path.dirname(os.path.abspath(__file__))
-    # exe_dir = os.path.dirname(sys.executable)
-    # script_dir = sys._MEIPASS
     file_path = "keyword.csv"
     print(file_path)
 
@@ -52,40 +48,73 @@ def load_csv():
             csv_reader = csv.reader(file)
             next(csv_reader)
             for row in csv_reader:
-                if len(row) != 4:
+                if len(row) != 1:
                     # 로그 창에 띄우기
-                    append_log(f"[ERROR] 잘못된 데이터입니다. 열 개수를 확인해주세요.")
+                    wx.CallAfter(append_log, f"[ERROR] 잘못된 데이터입니다. 열 개수를 확인해주세요.")
                     return
                 csv_files.append(row)
-                csv_listbox.Append(row[1])
+                csv_listbox.Append(row[0])
     except Exception as e:
         # 파일 열기 실패 처리
-        append_log(f"[ERROR] 파일을 열 수 없습니다: {e}")
+        wx.CallAfter(append_log, f"[ERROR] 파일을 열 수 없습니다: {e}")
         return
 
     # 파일 불러오기 완료
-    append_log("파일 불러오기 완료")
-    execute_button.Enable(True)
-    csv_num = len(csv_files)
-    execute_button.Enable(True)
+    wx.CallAfter(append_log, "파일 불러오기 완료")
+    wx.CallAfter(time.sleep, 2)
 
+
+def execute_thread():
+    global thread_running, csv_files
+    gemini.init_gemini()
+    contents = []
+
+    load_csv()
+
+
+
+    # for keyword in csv_files:
+    #     contents.append(gemini.get_response(keyword))
+    #     wx.CallAfter(time.sleep, 2)
+
+    print(gemini.get_response("맥북 M1 프로"))
+
+    # 일단 Gemini 테스트 먼저
+    # # csv에서 키워드를 가져온 후 내부 메모리에 저장
+
+    #
+    #
+    #
+    # # 홈페이지 접속 및 포스팅 화면 진입
+    # driver.init_chrome()
+    # wx.CallAfter(append_log, "티스토리에 접속합니다.")
+    # driver.open_tistory()
+    # wx.CallAfter(append_log, "로그인을 실행합니다.")
+    # driver.click_login()
+    # driver.login(kakaoId_input.Value, kakaoPw_input.Value)
+    # wx.CallAfter(append_log, "로그인 완료")
+    # driver.click_posting()
+
+    #
+    wx.CallAfter(execute_button.Enable, True)
+    thread_running = False
 
 def execute(event):
-    driver.init_chrome()
-    append_log("티스토리에 접속합니다.")
-    time.sleep(2)
-    driver.open_tistory()
-    append_log("로그인을 실행합니다.")
-    driver.click_login()
-    driver.login(kakaoId_input.Value, kakaoPw_input.Value)
-    driver.click_posting()
+    global thread_running
+    if thread_running:
+        return
+
+    thread_running = True
+    thread = threading.Thread(target=execute_thread)
+    execute_button.Enable(False)  # 버튼 비활성화
+    thread.start()
 
 
 
 # 전체 패널
 panel = wx.Panel(frame, wx.ID_ANY)
 panel_sizer = wx.BoxSizer(wx.HORIZONTAL)
-frame_sizer = wx.BoxSizer(wx.HORIZONTAL)
+frame_sizer = wx.BoxSizer(wx.VERTICAL)
 
 # 왼쪽 공간
 left_panel = wx.Panel(panel, wx.ID_ANY)

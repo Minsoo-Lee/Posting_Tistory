@@ -31,6 +31,7 @@ def init_chrome():
         chrome_options.add_argument('--start-maximized')
         chrome_options.add_argument("--incognito")  # 시크릿 모드 추가
         driver = webdriver.Chrome(options=chrome_options)
+        time.sleep(2)
 
 def open_tistory():
     global driver, url
