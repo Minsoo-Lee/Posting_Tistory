@@ -3,7 +3,7 @@ import threading
 import os
 import wx, openpyxl, time, wx._xml, random, sys, uuid, requests, csv
 import wx.richtext as rt
-import driver, gemini
+import driver, gemini, coupang
 
 thread_running = False
 app = wx.App(False)
@@ -66,24 +66,20 @@ def load_csv():
 
 def execute_thread():
     global thread_running, csv_files
-    gemini.init_gemini()
-    contents = []
+    # gemini.init_gemini()
+    # contents = []
+    #
+    # # CSV 파일 읽어오기
+    # load_csv()
 
-    load_csv()
+    print(coupang.get_data("맥북 M4 프로", 10))
 
-
+    # 일단 Gemini 테스트 먼저
+    # csv에서 키워드를 가져온 후 내부 메모리에 저장
 
     # for keyword in csv_files:
     #     contents.append(gemini.get_response(keyword))
     #     wx.CallAfter(time.sleep, 2)
-
-    print(gemini.get_response("맥북 M1 프로"))
-
-    # 일단 Gemini 테스트 먼저
-    # # csv에서 키워드를 가져온 후 내부 메모리에 저장
-
-    #
-    #
     #
     # # 홈페이지 접속 및 포스팅 화면 진입
     # driver.init_chrome()
@@ -94,10 +90,9 @@ def execute_thread():
     # driver.login(kakaoId_input.Value, kakaoPw_input.Value)
     # wx.CallAfter(append_log, "로그인 완료")
     # driver.click_posting()
-
     #
-    wx.CallAfter(execute_button.Enable, True)
-    thread_running = False
+    # wx.CallAfter(execute_button.Enable, True)
+    # thread_running = False
 
 def execute(event):
     global thread_running

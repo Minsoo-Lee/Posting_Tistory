@@ -1,5 +1,5 @@
 import google.generativeai as genai
-import time
+import time, re
 
 gemini_key = "AIzaSyC-_RsZlNX73tC--cLmz_T4c2DR0pbsMVM"
 model = None
@@ -7,7 +7,7 @@ model = None
 def init_gemini():
     global model
     genai.configure(api_key=gemini_key)
-    model = genai.GenerativeModel('gemini-2.0-flash')
+    model = genai.GenerativeModel('gemini-1.5-pro-latest')
 
     # 모델 찾기
     # models = genai.list_models()
@@ -33,11 +33,13 @@ def get_response(keyword):
 
     response = model.generate_content(keyword)
     time.sleep(2)
+
     response = model.generate_content(response.text + """
         \n여기까지가 너가 작성해 준 내용인데, 사진을 총 다섯 군데에 넣을거야. 
         사진이 들어갈 만한 위치에 [사진]이라는 구분자를 넣어줘.
     """)
     time.sleep(2)
+
     photos = model.generate_content(response.text + """
         \n여기까지가 너가 작성해 준 내용인데, [사진]이라는 구분자를 대체할 수 있는 사진 5장을 생성하고 싶어.
         내가 다른 AI에서 사진을 생성할 수 있도록, 사진 5장에 관한 설명을 차례대로 [] 안에 넣어서 설명해 줘.
@@ -50,7 +52,10 @@ def get_response(keyword):
 
     # 추출된 내용을 리스트로 저장합니다.
     descriptions = list(matches)
-    print(descriptions)
+    x = model.generate_content(descriptions[0] + "에 맞는 사진을 다른 텍스트 없이 \"사진만\" 1장을 제공해 줘. 난 분명히 \"사진\"이라고 말했어. 텍스트로 제공하지 말고 이미지 파일로 제공해")
+    time.sleep(5)
+    print(x)
+    print(x.parts)
 
     return response.text
 
