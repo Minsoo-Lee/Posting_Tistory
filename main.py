@@ -61,25 +61,41 @@ def load_csv():
 
     # 파일 불러오기 완료
     wx.CallAfter(append_log, "파일 불러오기 완료")
-    wx.CallAfter(time.sleep, 2)
 
 
 def execute_thread():
     global thread_running, csv_files
-    # gemini.init_gemini()
-    # contents = []
-    #
-    # # CSV 파일 읽어오기
-    # load_csv()
 
-    print(coupang.get_data("맥북 M4 프로", 10))
+    # CSV 파일 읽어오기
+    load_csv()
+    time.sleep(1)
+
+    # Gemini로 글 생성
+    gemini.init_gemini()
+    wx.CallAfter(append_log, f"Gemini API를 초기화합니다")
+    time.sleep(1)
+    contents = []
+
+    # csv_files에서 가져온 키워드들을 Gemini로 글 생성
+    wx.CallAfter(append_log, f"Gemini API를 사용하여 작성할 글을 생성합니다.")
+    wx.CallAfter(wx.Yield)
+    for keyword in csv_files:
+        contents.append(gemini.get_response(keyword))
+        time.sleep(1)
+
+    print(contents)
+    #
+    # result = coupang.get_data("맥북 M4 프로", 10)
+    # print(result)
+    # coupang.download_images(result)
+    # coupang.add_border(50, "blue")
+    # wx.CallAfter(time.sleep, 2)
+    # coupang.remove_images()ㄷ
+
 
     # 일단 Gemini 테스트 먼저
     # csv에서 키워드를 가져온 후 내부 메모리에 저장
 
-    # for keyword in csv_files:
-    #     contents.append(gemini.get_response(keyword))
-    #     wx.CallAfter(time.sleep, 2)
     #
     # # 홈페이지 접속 및 포스팅 화면 진입
     # driver.init_chrome()

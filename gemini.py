@@ -21,41 +21,18 @@ def init_gemini():
 def get_response(keyword):
     global model
     response = None
-    result = []
     while response is None:
-        response = model.generate_content("""
-            내가 제품과 관련된 키워드를 던져주면, 그 제품에 대해서 설명을 해줘. 
+        response = model.generate_content(f"""
+            내가 너에게 제품을 알려줄거야. 그 제품에 대해서 자세하게 설명을 해줘. 
             본문과 제목은 자연스럽게 유지하고, 사람이 쓴 것처럼 구조를 잘 배치해 줘야 해. 
-            이해했으면 OK라고 말해줘.
+            내용은 한 10줄 정도였으면 좋겠어.
+            그리고 너가 작성한 내용에서 사진을 총 다섯 군데에 넣을거야.
+            사진이 들어갈 만한 위치에 [사진]이라는 구분자를 넣어줘.
+            
+            자, 이제 너가 설명할 제품은 {keyword}야.
         """)
 
-    time.sleep(2)
-
-    response = model.generate_content(keyword)
-    time.sleep(2)
-
-    response = model.generate_content(response.text + """
-        \n여기까지가 너가 작성해 준 내용인데, 사진을 총 다섯 군데에 넣을거야. 
-        사진이 들어갈 만한 위치에 [사진]이라는 구분자를 넣어줘.
-    """)
-    time.sleep(2)
-
-    photos = model.generate_content(response.text + """
-        \n여기까지가 너가 작성해 준 내용인데, [사진]이라는 구분자를 대체할 수 있는 사진 5장을 생성하고 싶어.
-        내가 다른 AI에서 사진을 생성할 수 있도록, 사진 5장에 관한 설명을 차례대로 [] 안에 넣어서 설명해 줘.
-        그리고 그 설명 외에 부연설명이나 잡스러운 말들은 절대 하지 말고 사진 설명만 [] 안에 넣어줘.
-    """)
-    time.sleep(5)
-
-    # 정규 표현식을 사용하여 대괄호 안의 내용을 추출합니다.
-    matches = re.findall(r'\[(.*?)\]', photos.text)
-
-    # 추출된 내용을 리스트로 저장합니다.
-    descriptions = list(matches)
-    x = model.generate_content(descriptions[0] + "에 맞는 사진을 다른 텍스트 없이 \"사진만\" 1장을 제공해 줘. 난 분명히 \"사진\"이라고 말했어. 텍스트로 제공하지 말고 이미지 파일로 제공해")
-    time.sleep(5)
-    print(x)
-    print(x.parts)
+    print(f"response: {response.text}")
 
     return response.text
 

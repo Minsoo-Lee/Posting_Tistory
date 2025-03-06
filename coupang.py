@@ -2,9 +2,12 @@ import hmac
 import hashlib
 import requests
 import json
+import time
 from time import gmtime, strftime
 from urllib.parse import urlencode, quote
 import logging
+from PIL import Image, ImageOps
+import os
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -56,6 +59,43 @@ def filter_products(keyword, result):
 def get_data(keyword, limit):
     result = search_products(keyword, limit)
     return json.dumps(filter_products(keyword, result), indent=4, ensure_ascii=False)
+
+def download_images(data):
+    data = json.loads(data)
+    image_urls = [item["productImage"] for item in data]
+    index = 1
+    for image_url in image_urls:
+        response = requests.get(image_url, stream=True)
+        if response.status_code == 200:
+            with open(f"{index}.jpg", "wb") as file:
+                for chunk in response.iter_content(1024):
+                    file.write(chunk)
+            print(f"이미지 다운로드 완료: {index}.jpg")
+            index += 1
+        else:
+            print("이미지 다운로드 실패, 상태 코드:", response.status_code)
+        time.sleep(1)
+    return image_urls
+
+def add_border(size, color):
+    for index in range(1, 6):
+        # 이미지 열기
+        image = Image.open(f"{index}.jpg")  # 저장한 이미지 파일 경로
+
+        # 테두리 크기 및 색상 설정
+        border_size = size  # 원하는 테두리 두께
+        border_color = color  # 원하는 색상
+
+        # 테두리 추가 (ImageOps.expand 사용)
+        bordered_image = ImageOps.expand(image, border=border_size, fill=border_color)
+
+        # 결과 저장
+        bordered_image.save(f"{index}.jpg")
+
+def remove_images():
+    for index in range(1, 6):
+        file_path = f"{index}.jpg"
+        os.remove(file_path)
 
 # keyword = "맥북 M4 프로"
 # result = search_products("맥북 M4 프로", 5)
