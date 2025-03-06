@@ -16,6 +16,7 @@ thread_end = False
 account_index = 1
 post_check = True
 csv_files = []
+URL = "/v2/providers/affiliate_open_api/apis/openapi/v1/products/search"
 
 def append_log(log):
     current_time = time.strftime("[%Y-%m-%d %H:%M:%S] ", time.localtime())
@@ -66,47 +67,56 @@ def load_csv():
 def execute_thread():
     global thread_running, csv_files
 
-    # CSV 파일 읽어오기
-    load_csv()
-    time.sleep(1)
-
-    # Gemini로 글 생성
-    gemini.init_gemini()
-    wx.CallAfter(append_log, f"Gemini API를 초기화합니다")
-    time.sleep(1)
-    contents = []
-
-    # csv_files에서 가져온 키워드들을 Gemini로 글 생성
-    wx.CallAfter(append_log, f"Gemini API를 사용하여 작성할 글을 생성합니다.")
-    wx.CallAfter(wx.Yield)
-    for keyword in csv_files:
-        contents.append(gemini.get_response(keyword))
-        time.sleep(1)
-
-    print(contents)
-    #
-    # result = coupang.get_data("맥북 M4 프로", 10)
-    # print(result)
-    # coupang.download_images(result)
-    # coupang.add_border(50, "blue")
-    # wx.CallAfter(time.sleep, 2)
-    # coupang.remove_images()ㄷ
-
-
-    # 일단 Gemini 테스트 먼저
-    # csv에서 키워드를 가져온 후 내부 메모리에 저장
-
-    #
-    # # 홈페이지 접속 및 포스팅 화면 진입
-    # driver.init_chrome()
-    # wx.CallAfter(append_log, "티스토리에 접속합니다.")
-    # driver.open_tistory()
-    # wx.CallAfter(append_log, "로그인을 실행합니다.")
-    # driver.click_login()
+    # 1. 홈페이지 접속 및 포스팅 화면 진입
+    driver.init_chrome()
+    wx.CallAfter(append_log, "티스토리에 접속합니다.")
+    driver.open_tistory()
+    wx.CallAfter(append_log, "로그인을 실행합니다.")
+    driver.click_login()
+    driver.login("minsoo1101", "msLee9164@@")
     # driver.login(kakaoId_input.Value, kakaoPw_input.Value)
-    # wx.CallAfter(append_log, "로그인 완료")
-    # driver.click_posting()
+    wx.CallAfter(append_log, "로그인 완료")
+    driver.click_posting()
+    driver.select_category()
+
+
+    # # 2. CSV 파일 읽어오기
+    # load_csv()
+    # time.sleep(1)
     #
+    # # 3. Gemini 초기화
+    # gemini.init_gemini()
+    # wx.CallAfter(append_log, f"Gemini API를 초기화합니다")
+    # time.sleep(1)
+    #
+    # # 4. 쿠팡 API - Authorization 생성
+    # auth = coupang.get_auth("GET", URL)
+    #
+    # # csv_files에서 가져온 키워드들을 Gemini로 글 생성
+    # wx.CallAfter(append_log, f"Gemini API를 사용하여 작성할 글을 생성합니다.")
+    #
+    # # 5. 키워드를 돌아가면서 글 작성
+    # for keyword in csv_files:
+    #     # 5-1. 쿠팡 API로 데이터 수신
+    #     api_data = coupang.get_data(keyword, 10, auth)    # 쿠팡 API로 상품 정보 먼저 긁어오기
+    #     coupang.download_images(api_data)                      # 이미지를 로컬 환경에 저장
+    #     coupang_url = coupang.get_url(api_data)                # 제휴 url을 내부 메모리에 저장
+    #     coupang.add_border(50, "blue")               # 이미지에 테두리 추가
+    #
+    #     # 5-2. Gemini API로 글 생성
+    #     response = gemini.get_response(keyword)
+    #     title, content = response[0], response[1]
+    #
+    #     # 5-3. 본문에 링크 추가하기
+    #     content = content + coupang_url
+    #     time.sleep(1)
+    #
+    #     # 5-4. 열려있는 화면에서 글 작성하기
+    #
+    #     # 5-5. 다운받은 이미지 삭제
+    #     coupang.remove_images()
+
+    # 작업 다 끝나면 버튼 다시 활성화, 쓰레드 종료
     # wx.CallAfter(execute_button.Enable, True)
     # thread_running = False
 

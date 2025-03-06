@@ -55,3 +55,19 @@ def click_posting():
     driver.find_element(By.XPATH, "/html/body/div[2]/div[2]/div/div/div/div[2]/div/div[1]/div[2]/a[1]").click()
     time.sleep(2)
 
+def select_category():
+    category_button = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.XPATH, "//button[contains(text(), '카테고리')]"))
+    )
+    category_button.click()
+
+    # 2. 원하는 카테고리 선택 (예: "JAVA")
+    category_item = WebDriverWait(driver, 10).until(
+        EC.element_to_be_clickable((By.XPATH, "//div[@aria-label='JAVA']"))
+    )
+    category_item.click()
+
+    # driver.find_element(By.XPATH, '//*[@id="category-btn"]').click()
+    # driver.find_element(By.XPATH, "//div[@aria-label='JAVA']").click()
+    time.sleep(2)
+

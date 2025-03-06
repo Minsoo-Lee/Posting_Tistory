@@ -15,7 +15,7 @@
 # 2. 현재 진행 상황
 1. 티스토리 로그인 및 글 작성 화면 진입  
 2. csv 파일을 읽어와서 내부 메모리에 저장 (키워드만 한 줄로 저장)  
-3. Gemini API를 사용하여 키워드 기반 제품 설명 글 생성
+3. Gemini API를 사용하여 키워드 기반 제품 설명 글 생성  -> 이는 레퍼런스를 참조하여 사진은 위 1장, 아래 3장으로 설
 4. 쿠팡 파트너스 API를 활용하여 상품 검색 시 상품 목록 받기 (리스트)
 5. 쿠팡 파트너스 API를 활용하여 이미지를 로컬에 저장
 
@@ -28,6 +28,7 @@
 1. 쿠팡 상품 검색 시 API 콜 리밋은 1분에 50회
 2. 사진이 너무 겹치는 경우, 상품 상세 페이지에서 가져올 수 있는 방법 연구  
    (현재는 미리보기 사진만 가져와서 테두리 입힌 후 복붙)
+3. 로그인 실패 시 예외처리 (로그인을 다시 한다던가... 아니면 URL을 다시 접속한다던가...)
 
 # 5. 레퍼런스
 https://cafe.naver.com/fcbarcelonatip18/3521?art=ZXh0ZXJuYWwtc2VydmljZS1uYXZlci1zZWFyY2gtY2FmZS1wcg.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYWZlVHlwZSI6IkNBRkVfVVJMIiwiY2FmZVVybCI6ImZjYmFyY2Vsb25hdGlwMTgiLCJhcnRpY2xlSWQiOjM1MjEsImlzc3VlZEF0IjoxNzM5OTQyODkyMTIwfQ.VjotjCL2Di9Bl_iDZ5ZRuFq_hl3ueqmFO-o8QEvLtd4
