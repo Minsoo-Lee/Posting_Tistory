@@ -60,3 +60,4 @@ def get_data(keyword, limit):
 # keyword = "맥북 M4 프로"
 # result = search_products("맥북 M4 프로", 5)
 # print(json.dumps(filter_products(keyword, result), indent=4, ensure_ascii=False))
+
