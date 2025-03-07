@@ -1,5 +1,5 @@
 import threading
-
+import json
 import os
 import wx, openpyxl, time, wx._xml, random, sys, uuid, requests, csv
 import wx.richtext as rt
@@ -17,6 +17,7 @@ account_index = 1
 post_check = True
 csv_files = []
 URL = "/v2/providers/affiliate_open_api/apis/openapi/v1/products/search"
+IF_FIRST = True
 
 def append_log(log):
     current_time = time.strftime("[%Y-%m-%d %H:%M:%S] ", time.localtime())
@@ -65,7 +66,7 @@ def load_csv():
 
 
 def execute_thread():
-    global thread_running, csv_files
+    global thread_running, csv_files, IF_FIRST
 
     # 1. 홈페이지 접속 및 포스팅 화면 진입
     driver.init_chrome()
@@ -73,52 +74,71 @@ def execute_thread():
     driver.open_tistory()
     wx.CallAfter(append_log, "로그인을 실행합니다.")
     driver.click_login()
-    driver.login("minsoo1101", "msLee9164@@")
-    # driver.login(kakaoId_input.Value, kakaoPw_input.Value)
+    # driver.login("minsoo1101", "msLee9164@@")
+    driver.login(kakaoId_input.Value, kakaoPw_input.Value)
     wx.CallAfter(append_log, "로그인 완료")
-    driver.click_posting()
-    driver.select_category()
+    posting_url = driver.enter_posting()
 
 
-    # # 2. CSV 파일 읽어오기
-    # load_csv()
-    # time.sleep(1)
+    # 2. CSV 파일 읽어오기
+    load_csv()
+    time.sleep(1)
     #
-    # # 3. Gemini 초기화
-    # gemini.init_gemini()
-    # wx.CallAfter(append_log, f"Gemini API를 초기화합니다")
-    # time.sleep(1)
+    # 3. Gemini 초기화
+    gemini.init_gemini()
+    wx.CallAfter(append_log, f"Gemini API를 초기화합니다")
+    time.sleep(1)
+
+    # csv_files에서 가져온 키워드들을 Gemini로 글 생성
+    wx.CallAfter(append_log, f"Gemini API를 사용하여 작성할 글을 생성합니다.")
     #
-    # # 4. 쿠팡 API - Authorization 생성
-    # auth = coupang.get_auth("GET", URL)
-    #
-    # # csv_files에서 가져온 키워드들을 Gemini로 글 생성
-    # wx.CallAfter(append_log, f"Gemini API를 사용하여 작성할 글을 생성합니다.")
-    #
-    # # 5. 키워드를 돌아가면서 글 작성
-    # for keyword in csv_files:
-    #     # 5-1. 쿠팡 API로 데이터 수신
-    #     api_data = coupang.get_data(keyword, 10, auth)    # 쿠팡 API로 상품 정보 먼저 긁어오기
-    #     coupang.download_images(api_data)                      # 이미지를 로컬 환경에 저장
-    #     coupang_url = coupang.get_url(api_data)                # 제휴 url을 내부 메모리에 저장
-    #     coupang.add_border(50, "blue")               # 이미지에 테두리 추가
-    #
-    #     # 5-2. Gemini API로 글 생성
-    #     response = gemini.get_response(keyword)
-    #     title, content = response[0], response[1]
-    #
-    #     # 5-3. 본문에 링크 추가하기
-    #     content = content + coupang_url
-    #     time.sleep(1)
-    #
-    #     # 5-4. 열려있는 화면에서 글 작성하기
-    #
-    #     # 5-5. 다운받은 이미지 삭제
-    #     coupang.remove_images()
+    # 5. 키워드를 돌아가면서 글 작성
+    for keyword in csv_files:
+        # 그림 인덱스
+        index = 1
+        if IF_FIRST is False:
+            driver.enter_url(posting_url)
+        wx.CallAfter(append_log, "포스팅 화면 진입")
+        driver.select_category(category_input.Value)
+
+        # 5-1. 쿠팡 API로 데이터 수신
+        path = coupang.get_path(keyword[0], 10)
+        coupang_response = coupang.get_response(path)
+        # print(json.dumps(coupang_response, indent=4, ensure_ascii=False))
+
+        api_data = coupang.filter_products(keyword[0], coupang_response)          # 쿠팡 API로 상품 정보 먼저 긁어오기
+        # print(api_data)
+
+        image_urls = coupang.download_images(api_data)                      # 이미지를 로컬 환경에 저장
+        coupang_url = coupang_response['landingUrl']           # 제휴 url을 내부 메모리에 저장
+        coupang.add_border(50, "blue", len(image_urls))               # 이미지에 테두리 추가
+
+        # 5-2. Gemini API로 글 생성
+        response = gemini.get_response(keyword)
+        title, content = response[0], response[1]
+        time.sleep(1)
+
+        # 5-4. 열려있는 화면에서 글 작성하기
+        driver.post_title(title)
+        driver.enter_iframe()
+        driver.post_image(1)
+        driver.post_content(content)
+        driver.post_href(coupang_url)
+        for index in range(2, len(image_urls) + 1):
+            driver.post_image(index)
+        driver.quit_frame()
+
+        driver.click_posting()
+        driver.post_public()
+        wx.CallAfter(append_log, f"[{keyword[0]}]포스팅 완료")
+
+        # 5-5. 다운받은 이미지 삭제
+        coupang.remove_images(len(image_urls))
+        IF_FIRST = False
 
     # 작업 다 끝나면 버튼 다시 활성화, 쓰레드 종료
-    # wx.CallAfter(execute_button.Enable, True)
-    # thread_running = False
+    wx.CallAfter(execute_button.Enable, True)
+    thread_running = False
 
 def execute(event):
     global thread_running
@@ -155,35 +175,35 @@ kakaoPw_sizer = wx.BoxSizer(wx.HORIZONTAL)
 kakaoPw_sizer.Add(kakaoPw_input_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)  # wx.ALIGN_CENTER_VERTICAL로 수직 가운데 정렬
 kakaoPw_sizer.Add(kakaoPw_input, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 
-code_input_label = wx.StaticText(left_panel, wx.ID_ANY, "추천인 코드", size=(90, 20))
-code_input = wx.TextCtrl(left_panel, wx.ID_ANY, size=(230, 20))
+category_input_label = wx.StaticText(left_panel, wx.ID_ANY, "카테고리명", size=(90, 20))
+category_input = wx.TextCtrl(left_panel, wx.ID_ANY, size=(230, 20))
 
-code_sizer = wx.BoxSizer(wx.HORIZONTAL)
-code_sizer.Add(code_input_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)  # wx.ALIGN_CENTER_VERTICAL로 수직 가운데 정렬
-code_sizer.Add(code_input, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+category_sizer = wx.BoxSizer(wx.HORIZONTAL)
+category_sizer.Add(category_input_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)  # wx.ALIGN_CENTER_VERTICAL로 수직 가운데 정렬
+category_sizer.Add(category_input, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 
 csv_listbox = wx.ListBox(left_panel, wx.ID_ANY, style=wx.LB_SINGLE, size=(330, 400))
 
-id_input_label = wx.StaticText(left_panel, wx.ID_ANY, "ID", size=(90, 20))
-id_input = wx.TextCtrl(left_panel, wx.ID_ANY, size=(230, 20))
-
-id_sizer = wx.BoxSizer(wx.HORIZONTAL)
-id_sizer.Add(id_input_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)  # wx.ALIGN_CENTER_VERTICAL로 수직 가운데 정렬
-id_sizer.Add(id_input, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
-
-pw_input_label = wx.StaticText(left_panel, wx.ID_ANY, "비밀번호", size=(90, 20))
-pw_input = wx.TextCtrl(left_panel, wx.ID_ANY, size=(230, 20), style=wx.TE_PASSWORD)
-
-pw_sizer = wx.BoxSizer(wx.HORIZONTAL)
-pw_sizer.Add(pw_input_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)  # wx.ALIGN_CENTER_VERTICAL로 수직 가운데 정렬
-pw_sizer.Add(pw_input, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
-
-url_input_label = wx.StaticText(left_panel, wx.ID_ANY, "페이지 URL", size=(90, 20))
-url_input = wx.TextCtrl(left_panel, wx.ID_ANY, size=(230, 20))
-
-url_sizer = wx.BoxSizer(wx.HORIZONTAL)
-url_sizer.Add(url_input_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)  # wx.ALIGN_CENTER_VERTICAL로 수직 가운데 정렬
-url_sizer.Add(url_input, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+# id_input_label = wx.StaticText(left_panel, wx.ID_ANY, "ID", size=(90, 20))
+# id_input = wx.TextCtrl(left_panel, wx.ID_ANY, size=(230, 20))
+#
+# id_sizer = wx.BoxSizer(wx.HORIZONTAL)
+# id_sizer.Add(id_input_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)  # wx.ALIGN_CENTER_VERTICAL로 수직 가운데 정렬
+# id_sizer.Add(id_input, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+#
+# pw_input_label = wx.StaticText(left_panel, wx.ID_ANY, "비밀번호", size=(90, 20))
+# pw_input = wx.TextCtrl(left_panel, wx.ID_ANY, size=(230, 20), style=wx.TE_PASSWORD)
+#
+# pw_sizer = wx.BoxSizer(wx.HORIZONTAL)
+# pw_sizer.Add(pw_input_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)  # wx.ALIGN_CENTER_VERTICAL로 수직 가운데 정렬
+# pw_sizer.Add(pw_input, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
+#
+# url_input_label = wx.StaticText(left_panel, wx.ID_ANY, "페이지 URL", size=(90, 20))
+# url_input = wx.TextCtrl(left_panel, wx.ID_ANY, size=(230, 20))
+#
+# url_sizer = wx.BoxSizer(wx.HORIZONTAL)
+# url_sizer.Add(url_input_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)  # wx.ALIGN_CENTER_VERTICAL로 수직 가운데 정렬
+# url_sizer.Add(url_input, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 
 execute_button = wx.Button(left_panel, wx.ID_ANY, "작업 수행", size=(330, 30))
 execute_button.Bind(wx.EVT_BUTTON, execute)
@@ -191,22 +211,22 @@ execute_button.Enable(True)
 
 left_sizer.Add(kakaoId_sizer, 0, wx.ALL, 10)
 left_sizer.Add(kakaoPw_sizer, 0, wx.ALL, 10)
-left_sizer.Add(code_sizer, 0, wx.ALL, 10)
+left_sizer.Add(category_sizer, 0, wx.ALL, 10)
 left_sizer.Add(csv_listbox, 1, wx.LEFT | wx.RIGHT, 10)  # proportion을 1로 설정
-left_sizer.Add(id_sizer, 0, wx.ALL, 10)
-left_sizer.Add(pw_sizer, 0, wx.ALL, 10)
-left_sizer.Add(url_sizer, 0, wx.ALL, 10)
+# left_sizer.Add(id_sizer, 0, wx.ALL, 10)
+# left_sizer.Add(pw_sizer, 0, wx.ALL, 10)
+# left_sizer.Add(url_sizer, 0, wx.ALL, 10)
 left_sizer.Add(execute_button, 0, wx.ALL, 10)
 left_panel.SetSizer(left_sizer)
 
 # 구분선
-separator_line = wx.StaticLine(panel, wx.ID_ANY, style=wx.LI_VERTICAL, size=(1, 750))
+separator_line = wx.StaticLine(panel, wx.ID_ANY, style=wx.LI_VERTICAL, size=(1, 580))
 
 # 오른쪽 공간
 right_panel = wx.Panel(panel, wx.ID_ANY)
 right_sizer = wx.BoxSizer(wx.VERTICAL)
 
-log_text_widget = rt.RichTextCtrl(right_panel, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(500, 730))
+log_text_widget = rt.RichTextCtrl(right_panel, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(500, 580))
 
 right_sizer.Add(log_text_widget, proportion=1, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, border=10)
 right_panel.SetSizer(right_sizer)
