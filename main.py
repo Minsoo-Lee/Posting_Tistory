@@ -4,6 +4,7 @@ import os
 import wx, openpyxl, time, wx._xml, random, sys, uuid, requests, csv
 import wx.richtext as rt
 import driver, gemini, coupang
+import json
 
 thread_running = False
 app = wx.App(False)
@@ -43,7 +44,6 @@ def load_csv():
     csv_files.clear()
 
     file_path = "keyword.csv"
-    print(file_path)
 
     try:
         with open(file_path, 'r', newline='') as file:
@@ -74,8 +74,8 @@ def execute_thread():
     driver.open_tistory()
     wx.CallAfter(append_log, "로그인을 실행합니다.")
     driver.click_login()
-    # driver.login("minsoo1101", "msLee9164@@")
-    driver.login(kakaoId_input.Value, kakaoPw_input.Value)
+    driver.login("minsoo1101", "msLee9164@@")
+    # driver.login(kakaoId_input.Value, kakaoPw_input.Value)
     wx.CallAfter(append_log, "로그인 완료")
     posting_url = driver.enter_posting()
 
@@ -99,22 +99,25 @@ def execute_thread():
         if IF_FIRST is False:
             driver.enter_url(posting_url)
         wx.CallAfter(append_log, "포스팅 화면 진입")
-        driver.select_category(category_input.Value)
+        driver.select_category("JAVA")
+        # driver.select_category(category_input.Value)
 
         # 5-1. 쿠팡 API로 데이터 수신
         path = coupang.get_path(keyword[0], 10)
         coupang_response = coupang.get_response(path)
-        # print(json.dumps(coupang_response, indent=4, ensure_ascii=False))
+        print(json.dumps(coupang_response, indent=4, ensure_ascii=False))
 
         api_data = coupang.filter_products(keyword[0], coupang_response)          # 쿠팡 API로 상품 정보 먼저 긁어오기
-        # print(api_data)
+        print(json.dumps(api_data, indent=4, ensure_ascii=False))
 
         image_urls = coupang.download_images(api_data)                      # 이미지를 로컬 환경에 저장
         coupang_url = coupang_response['landingUrl']           # 제휴 url을 내부 메모리에 저장
         coupang.add_border(50, "blue", len(image_urls))               # 이미지에 테두리 추가
 
         # 5-2. Gemini API로 글 생성
-        response = gemini.get_response(keyword)
+        response = gemini.get_response(keyword, len(image_urls))
+        wx.CallAfter(append_log, f"{response[0]}\n{response[1]}")
+
         title, content = response[0], response[1]
         time.sleep(1)
 

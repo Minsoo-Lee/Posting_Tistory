@@ -95,9 +95,22 @@ def post_title(title):
 def enter_iframe():
     iframe = driver.find_element(By.TAG_NAME, "iframe")  # iframe 태그를 찾기
     driver.switch_to.frame(iframe)  # 해당 iframe으로 전환
+    time.sleep(1)
 
 def post_content(content):
-    driver.find_element(By.XPATH, "//*[@id='tinymce']").send_keys(content)
+    # driver.find_element(By.XPATH, "//*[@id='tinymce']").send_keys(content)
+
+    editor = driver.find_element(By.TAG_NAME, "body")
+    editor.send_keys(" ")  # 공백을 한 번 입력해서 입력 상태 활성화
+    time.sleep(0.5)
+
+    driver.execute_script("arguments[0].innerHTML = arguments[1];", editor, content)
+    time.sleep(1)
+
+    # 입력 이벤트 트리거
+    driver.execute_script("arguments[0].dispatchEvent(new Event('input', { bubbles: true }));", editor)
+    driver.execute_script("arguments[0].dispatchEvent(new Event('change', { bubbles: true }));", editor)
+    time.sleep(1)
 
 def post_href(link):
     print(link)
