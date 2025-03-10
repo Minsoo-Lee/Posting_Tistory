@@ -4,7 +4,7 @@ import time, re
 gemini_key = "AIzaSyC-_RsZlNX73tC--cLmz_T4c2DR0pbsMVM"
 model = None
 
-INTRO = "\n\n쿠팡 활동의 일환으로 수수료를 받습니다.\n\n"
+INTRO = "<br>쿠팡 활동의 일환으로 수수료를 받습니다.<br><br>"
 
 def init_gemini():
     global model
@@ -46,14 +46,15 @@ def get_response(keyword, n):
                     
                     본문에서 소제목으로 할 문장은 <h3></h3> 태그로 감싸주고, 굵게 할 문장 혹은 단어는 <b></b> 태그로 감싸주고,
                     좀 중요한 문장이다 싶은 것들은 <span style="color:blue;"></span> 태그로 감싸줘.
-                    그리고 줄바꿈 할 때는 문장 앞에 <br>태그를 넣어주는데, 소제목 다음에 처음 나오는 문장에는 넣지 마.                    
+                    그리고 줄바꿈 할 때는 문장 앞에 <br>태그를 넣어주는데, 소제목 다음에 처음 나오는 문장에는 넣지 마.
+                    그리고 소제목 앞에는 <br> 태그를 2개 넣어줘.                    
                     
                     자, 이제 너가 설명할 제품은 {keyword}야.
                 """)
 
-    outro = f"\n\n[{keyword[0]} 구매하기]\n➡️"
+    outro = f"<br><br>[{keyword[0]} 구매하기]<br>"
     split_pcs = response.text.split("[구분]")
-    split_pcs[1] = split_pcs[0] + INTRO + split_pcs[1].strip() + outro
+    split_pcs[1] = split_pcs[0] + "<br>" + INTRO + split_pcs[1].strip() + outro
     wait(1)
 
     return split_pcs

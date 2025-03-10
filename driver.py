@@ -100,6 +100,9 @@ def enter_iframe():
 def post_content(content):
     # driver.find_element(By.XPATH, "//*[@id='tinymce']").send_keys(content)
 
+    # new
+    content = '<div style="text-align: center; line-height: 2;">' + content + '</div>'
+
     editor = driver.find_element(By.TAG_NAME, "body")
     editor.send_keys(" ")  # 공백을 한 번 입력해서 입력 상태 활성화
     time.sleep(0.5)
@@ -159,3 +162,17 @@ def post_public():
     time.sleep(1)
     driver.find_element(By.XPATH, "/html/body/div[5]/div/div/div/form/fieldset/div[3]/div/button[2]").click()
     time.sleep(1)
+
+def align_center():
+    driver.find_element(By.XPATH, "/html/body/div[1]/div/main/div/div[5]/div/div/div[1]/div/div/div/div/div/div[3]/div/div[2]/button").click()
+    time.sleep(1)
+
+def divide_content(content):
+    return content.split("[사진 삽입]")
+
+def make_final_content(content_list, length):
+    result = ""
+    i = 0
+    for i in range(0, length):
+        result += (content_list[i] + f'<img src="{i}.jpg" alt="로컬 이미지">')
+    return result + content_list[i+ 1]

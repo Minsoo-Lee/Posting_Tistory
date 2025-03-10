@@ -46,7 +46,7 @@ def load_csv():
     file_path = "keyword.csv"
 
     try:
-        with open(file_path, 'r', newline='') as file:
+        with open(file_path, 'r', newline='', encoding='utf-8') as file:
             csv_reader = csv.reader(file)
             next(csv_reader)
             for row in csv_reader:
@@ -110,25 +110,28 @@ def execute_thread():
         api_data = coupang.filter_products(keyword[0], coupang_response)          # 쿠팡 API로 상품 정보 먼저 긁어오기
         print(json.dumps(api_data, indent=4, ensure_ascii=False))
 
-        image_urls = coupang.download_images(api_data)                      # 이미지를 로컬 환경에 저장
+        image_urls = coupang.download_images(api_data)
+        image_qty = len(image_urls)
         coupang_url = coupang_response['landingUrl']           # 제휴 url을 내부 메모리에 저장
-        coupang.add_border(50, "blue", len(image_urls))               # 이미지에 테두리 추가
+        coupang.add_border(50, "blue", image_qty)               # 이미지에 테두리 추가
 
         # 5-2. Gemini API로 글 생성
-        response = gemini.get_response(keyword, len(image_urls))
+        response = gemini.get_response(keyword, image_qty)
         wx.CallAfter(append_log, f"{response[0]}\n{response[1]}")
 
         title, content = response[0], response[1]
         time.sleep(1)
 
+        content_list = driver.divide_content(content)
+
+        final_content = driver.make_final_content(content_list, image_qty)
+
         # 5-4. 열려있는 화면에서 글 작성하기
         driver.post_title(title)
+        driver.align_center()
         driver.enter_iframe()
-        driver.post_image(1)
-        driver.post_content(content)
+        driver.post_content(final_content)
         driver.post_href(coupang_url)
-        for index in range(2, len(image_urls) + 1):
-            driver.post_image(index)
         driver.quit_frame()
 
         driver.click_posting()
