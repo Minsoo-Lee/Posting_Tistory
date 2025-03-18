@@ -167,73 +167,67 @@ def execute(event):
     execute_button.Enable(False)  # 버튼 비활성화
     thread.start()
 
-
-
 # 전체 패널
 panel = wx.Panel(frame, wx.ID_ANY)
+panel.SetBackgroundColour("#f5f5f5")  # 배경 색상 설정
 panel_sizer = wx.BoxSizer(wx.HORIZONTAL)
 frame_sizer = wx.BoxSizer(wx.VERTICAL)
 
 # 왼쪽 공간
 left_panel = wx.Panel(panel, wx.ID_ANY)
+left_panel.SetBackgroundColour("#ffffff")  # 배경 색상 설정
 left_sizer = wx.BoxSizer(wx.VERTICAL)
 
-kakaoId_input_label = wx.StaticText(left_panel, wx.ID_ANY, "ID", size=(90, 20))
-kakaoId_input = wx.TextCtrl(left_panel, wx.ID_ANY, size=(230, 20))
+# Kakao ID 입력 필드
+kakaoId_input_label = wx.StaticText(left_panel, wx.ID_ANY, "ID", size=(90, 30))
+kakaoId_input_label.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+kakaoId_input_label.SetForegroundColour(wx.Colour(0, 102, 204))  # 텍스트 색상 설정
+kakaoId_input = wx.TextCtrl(left_panel, wx.ID_ANY, size=(230, 30), style=wx.TE_LEFT)
+kakaoId_input.SetFont(wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL))
 
 kakaoId_sizer = wx.BoxSizer(wx.HORIZONTAL)
-kakaoId_sizer.Add(kakaoId_input_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)  # wx.ALIGN_CENTER_VERTICAL로 수직 가운데 정렬
+kakaoId_sizer.Add(kakaoId_input_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 kakaoId_sizer.Add(kakaoId_input, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 
-kakaoPw_input_label = wx.StaticText(left_panel, wx.ID_ANY, "비밀번호", size=(90, 20))
-kakaoPw_input = wx.TextCtrl(left_panel, wx.ID_ANY, size=(230, 20), style=wx.TE_PASSWORD)
+# Kakao 비밀번호 입력 필드
+kakaoPw_input_label = wx.StaticText(left_panel, wx.ID_ANY, "비밀번호", size=(90, 30))
+kakaoPw_input_label.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+kakaoPw_input_label.SetForegroundColour(wx.Colour(0, 102, 204))
+kakaoPw_input = wx.TextCtrl(left_panel, wx.ID_ANY, size=(230, 30), style=wx.TE_PASSWORD)
+kakaoPw_input.SetFont(wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL))
 
 kakaoPw_sizer = wx.BoxSizer(wx.HORIZONTAL)
-kakaoPw_sizer.Add(kakaoPw_input_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)  # wx.ALIGN_CENTER_VERTICAL로 수직 가운데 정렬
+kakaoPw_sizer.Add(kakaoPw_input_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 kakaoPw_sizer.Add(kakaoPw_input, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 
-category_input_label = wx.StaticText(left_panel, wx.ID_ANY, "카테고리명", size=(90, 20))
-category_input = wx.TextCtrl(left_panel, wx.ID_ANY, size=(230, 20))
+# 카테고리명 입력 필드
+category_input_label = wx.StaticText(left_panel, wx.ID_ANY, "카테고리명", size=(90, 30))
+category_input_label.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+category_input_label.SetForegroundColour(wx.Colour(0, 102, 204))
+category_input = wx.TextCtrl(left_panel, wx.ID_ANY, size=(230, 30))
+category_input.SetFont(wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL))
 
 category_sizer = wx.BoxSizer(wx.HORIZONTAL)
-category_sizer.Add(category_input_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)  # wx.ALIGN_CENTER_VERTICAL로 수직 가운데 정렬
+category_sizer.Add(category_input_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 category_sizer.Add(category_input, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
 
-csv_listbox = wx.ListBox(left_panel, wx.ID_ANY, style=wx.LB_SINGLE, size=(330, 400))
+# CSV 목록 (리스트박스 스타일 변경)
+csv_listbox = wx.ListBox(left_panel, wx.ID_ANY, style=wx.LB_SINGLE, size=(330, 250))
+csv_listbox.SetBackgroundColour(wx.Colour(245, 245, 245))  # 리스트박스 배경 색상 설정
+csv_listbox.SetFont(wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL))
 
-# id_input_label = wx.StaticText(left_panel, wx.ID_ANY, "ID", size=(90, 20))
-# id_input = wx.TextCtrl(left_panel, wx.ID_ANY, size=(230, 20))
-#
-# id_sizer = wx.BoxSizer(wx.HORIZONTAL)
-# id_sizer.Add(id_input_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)  # wx.ALIGN_CENTER_VERTICAL로 수직 가운데 정렬
-# id_sizer.Add(id_input, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
-#
-# pw_input_label = wx.StaticText(left_panel, wx.ID_ANY, "비밀번호", size=(90, 20))
-# pw_input = wx.TextCtrl(left_panel, wx.ID_ANY, size=(230, 20), style=wx.TE_PASSWORD)
-#
-# pw_sizer = wx.BoxSizer(wx.HORIZONTAL)
-# pw_sizer.Add(pw_input_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)  # wx.ALIGN_CENTER_VERTICAL로 수직 가운데 정렬
-# pw_sizer.Add(pw_input, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
-#
-# url_input_label = wx.StaticText(left_panel, wx.ID_ANY, "페이지 URL", size=(90, 20))
-# url_input = wx.TextCtrl(left_panel, wx.ID_ANY, size=(230, 20))
-#
-# url_sizer = wx.BoxSizer(wx.HORIZONTAL)
-# url_sizer.Add(url_input_label, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)  # wx.ALIGN_CENTER_VERTICAL로 수직 가운데 정렬
-# url_sizer.Add(url_input, 0, wx.ALL | wx.ALIGN_CENTER_VERTICAL, 5)
-
-execute_button = wx.Button(left_panel, wx.ID_ANY, "작업 수행", size=(330, 30))
+# 작업 수행 버튼
+execute_button = wx.Button(left_panel, wx.ID_ANY, "작업 수행", size=(330, 40))
+execute_button.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD))
+execute_button.SetBackgroundColour(wx.Colour(0, 153, 255))  # 버튼 배경 색상 설정
+execute_button.SetForegroundColour(wx.Colour(255, 255, 255))  # 버튼 텍스트 색상 설정
 execute_button.Bind(wx.EVT_BUTTON, execute)
-execute_button.Enable(True)
 
 left_sizer.Add(kakaoId_sizer, 0, wx.ALL, 10)
 left_sizer.Add(kakaoPw_sizer, 0, wx.ALL, 10)
 left_sizer.Add(category_sizer, 0, wx.ALL, 10)
-left_sizer.Add(csv_listbox, 1, wx.LEFT | wx.RIGHT, 10)  # proportion을 1로 설정
-# left_sizer.Add(id_sizer, 0, wx.ALL, 10)
-# left_sizer.Add(pw_sizer, 0, wx.ALL, 10)
-# left_sizer.Add(url_sizer, 0, wx.ALL, 10)
-left_sizer.Add(execute_button, 0, wx.ALL, 10)
+left_sizer.Add(csv_listbox, 1, wx.LEFT | wx.RIGHT | wx.EXPAND, 10)  # proportion을 1로 설정
+left_sizer.Add(execute_button, 0, wx.ALL | wx.ALIGN_CENTER, 10)
 left_panel.SetSizer(left_sizer)
 
 # 구분선
@@ -241,9 +235,13 @@ separator_line = wx.StaticLine(panel, wx.ID_ANY, style=wx.LI_VERTICAL, size=(1, 
 
 # 오른쪽 공간
 right_panel = wx.Panel(panel, wx.ID_ANY)
+right_panel.SetBackgroundColour("#ffffff")  # 배경 색상 설정
 right_sizer = wx.BoxSizer(wx.VERTICAL)
 
+# 로그 텍스트 영역
 log_text_widget = rt.RichTextCtrl(right_panel, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(500, 580))
+log_text_widget.SetBackgroundColour(wx.Colour(240, 240, 240))  # 배경 색상 설정
+log_text_widget.SetFont(wx.Font(10, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL))
 
 right_sizer.Add(log_text_widget, proportion=1, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, border=10)
 right_panel.SetSizer(right_sizer)
