@@ -52,9 +52,10 @@ def get_response(keyword, n):
                     자, 이제 너가 설명할 제품은 {keyword}야.
                 """)
 
-    outro = f"<br><br>[{keyword[0]} 구매하기]<br>"
+    # outro = f"<br><br>[{keyword[0]} 구매하기]<br>"
     split_pcs = response.text.split("[구분]")
-    split_pcs[1] = split_pcs[0] + "<br>" + INTRO + split_pcs[1].strip() + outro
+    split_pcs[1] = split_pcs[0] + "<br>" + INTRO + split_pcs[1].strip()
+    # split_pcs[1] = split_pcs[0] + "<br>" + INTRO + split_pcs[1].strip() + outro
     wait(1)
 
     return split_pcs

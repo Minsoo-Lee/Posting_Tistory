@@ -13,6 +13,7 @@ from urllib import request
 from io import BytesIO
 import threading
 from webdriver_manager.chrome import ChromeDriverManager
+import base64
 
 driver = None
 url = "https://www.tistory.com"
@@ -97,12 +98,94 @@ def enter_iframe():
     driver.switch_to.frame(iframe)  # 해당 iframe으로 전환
     time.sleep(1)
 
-def post_content(content):
+def post_content(content, is_center = True):
+    if is_center is True:
+        content_html = f'<div style="text-align: center; line-height: 2;">{content}</div>'
+    else:
+        content_html = f'<div style="text-align: line-height: 2;">{content}</div>'
+
+    editor = driver.find_element(By.TAG_NAME, "body")
+    editor.send_keys(" ")  # 입력 활성화
+    time.sleep(0.5)
+
+    # 새로운 div를 추가
+    script = """
+        var div = document.createElement('div');
+        div.innerHTML = arguments[0];
+        document.body.appendChild(div);
+        """
+    driver.execute_script(script, content_html)
+    time.sleep(1)
     # driver.find_element(By.XPATH, "//*[@id='tinymce']").send_keys(content)
 
     # new
-    content = '<div style="text-align: center; line-height: 2;">' + content + '</div>'
+    # return '<div style="text-align: center; line-height: 2;">' + content + '</div>'
 
+    # editor = driver.find_element(By.TAG_NAME, "body")
+    # editor.send_keys(" ")  # 공백을 한 번 입력해서 입력 상태 활성화
+    # time.sleep(0.5)
+
+    # driver.execute_script("arguments[0].innerHTML = arguments[1];", editor, content)
+    # time.sleep(1)
+    #
+    # # 입력 이벤트 트리거
+    # driver.execute_script("arguments[0].dispatchEvent(new Event('input', { bubbles: true }));", editor)
+    # driver.execute_script("arguments[0].dispatchEvent(new Event('change', { bubbles: true }));", editor)
+    # time.sleep(1)
+
+def post_href(link, text="클릭하여 이동"):
+    script = f"""
+        var body = document.body;
+        var aTag = document.createElement('a');
+        aTag.href = '{link}';
+        aTag.target = '_blank';
+        aTag.textContent = '{text}';
+
+        // 스타일 추가
+        aTag.style.display = 'inline-block';
+        aTag.style.padding = '10px 20px';
+        aTag.style.margin = '10px auto';
+        aTag.style.fontSize = '16px';
+        aTag.style.color = '#ffffff';
+        aTag.style.backgroundColor = '#007BFF';
+        aTag.style.border = 'none';
+        aTag.style.borderRadius = '5px';
+        aTag.style.textDecoration = 'none';
+        aTag.style.textAlign = 'center';
+        aTag.style.boxShadow = '2px 2px 10px rgba(0, 0, 0, 0.2)';
+        aTag.style.cursor = 'pointer';
+
+        // hover 효과 추가
+        aTag.onmouseover = function() {{
+            aTag.style.backgroundColor = '#0056b3';
+        }};
+        aTag.onmouseout = function() {{
+            aTag.style.backgroundColor = '#007BFF';
+        }};
+
+        body.appendChild(aTag);
+    """
+    driver.execute_script(script)
+
+# def post_href(link):
+#     print(link)
+#     script = """
+#         var body = document.body;
+#         var aTag = document.createElement('a');
+#         aTag.href = '%s';
+#         aTag.target = '_blank';
+#         aTag.textContent = '%s';
+#         body.appendChild(aTag);
+#
+#         // 강제로 링크 클릭 이벤트 추가
+#         aTag.addEventListener('click', function(event) {
+#             window.open(aTag.href, '_blank');  // 새 탭에서 링크 열기
+#         });
+#         """ % (link, link)
+#
+#     driver.execute_script(script)
+
+def insert_script(content):
     editor = driver.find_element(By.TAG_NAME, "body")
     editor.send_keys(" ")  # 공백을 한 번 입력해서 입력 상태 활성화
     time.sleep(0.5)
@@ -115,40 +198,42 @@ def post_content(content):
     driver.execute_script("arguments[0].dispatchEvent(new Event('change', { bubbles: true }));", editor)
     time.sleep(1)
 
-def post_href(link):
-    print(link)
-    script = """
-        var body = document.body;
-        var aTag = document.createElement('a');
-        aTag.href = '%s';
-        aTag.target = '_blank';
-        aTag.textContent = '%s';
-        body.appendChild(aTag);
-        
-        // 강제로 링크 클릭 이벤트 추가
-        aTag.addEventListener('click', function(event) {
-            window.open(aTag.href, '_blank');  // 새 탭에서 링크 열기
-        });
-        """ % (link, link)
-    driver.execute_script(script)
-
 def post_image(index):
     image_path = f"{index}.jpg"  # 실제 로컬 이미지 경로
     with open(image_path, "rb") as image_file:
         image_data = image_file.read()
 
     # base64로 변환
-    import base64
     image_base64 = base64.b64encode(image_data).decode('utf-8')
 
-    # JavaScript를 사용해 이미지를 삽입 (base64로 변환된 이미지)
+    # 새로운 img 태그를 추가하여 기존 내용 유지
     script = """
-    var body = document.querySelector('body');
     var img = document.createElement('img');
     img.src = 'data:image/jpeg;base64,' + arguments[0];
-    body.appendChild(img);
+    img.style.display = 'block';
+    img.style.width = '400px';  // 가로 크기 조정
+    img.style.height = 'auto';  // 세로 비율 유지
+    img.style.margin = '10px auto';
+    document.body.appendChild(img);
     """
     driver.execute_script(script, image_base64)
+    # image_path = f"{index}.jpg"  # 실제 로컬 이미지 경로
+    # with open(image_path, "rb") as image_file:
+    #     image_data = image_file.read()
+    #
+    # # base64로 변환
+    # import base64
+    # image_base64 = base64.b64encode(image_data).decode('utf-8')
+    #
+    # # JavaScript를 사용해 이미지를 삽입 (base64로 변환된 이미지)
+    # script = """
+    # var body = document.querySelector('body');
+    # var img = document.createElement('img');
+    # img.src = 'data:image/jpeg;base64,' + arguments[0];
+    # body.appendChild(img);
+    # """
+
+    # driver.execute_script(script, image_base64)
 
 def quit_frame():
     driver.switch_to.default_content()
@@ -170,9 +255,9 @@ def align_center():
 def divide_content(content):
     return content.split("[사진 삽입]")
 
-def make_final_content(content_list, length):
+def make_final_content(content_list, length, path):
     result = ""
     i = 0
     for i in range(0, length):
-        result += (content_list[i] + f'<img src="{i}.jpg" alt="로컬 이미지">')
+        result += (content_list[i] + f'<br><img src="{path}/{i + 1}.jpg" alt="로컬 이미지"><br>')
     return result + content_list[i+ 1]

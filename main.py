@@ -117,29 +117,44 @@ def execute_thread():
 
         # 5-2. Gemini API로 글 생성
         response = gemini.get_response(keyword, image_qty)
+        print(keyword)
         wx.CallAfter(append_log, f"{response[0]}\n{response[1]}")
 
         title, content = response[0], response[1]
         time.sleep(1)
 
-        content_list = driver.divide_content(content)
-
-        final_content = driver.make_final_content(content_list, image_qty)
+        # final_content = driver.make_final_content(content_list, image_qty, os.getcwd())
 
         # 5-4. 열려있는 화면에서 글 작성하기
         driver.post_title(title)
         driver.align_center()
         driver.enter_iframe()
-        driver.post_content(final_content)
+
+        content_list = driver.divide_content(content)
+        i = 0
+        for i in range(0, image_qty):
+            driver.post_content(content_list[i])
+            driver.post_image(i + 1)
+        driver.post_content(content_list[i + 1])
+        driver.post_content("<br><b>[" + keyword[0] + " 구매하기]</b><br>", False)
+
+        #     driver.post_content(content_list[i])
+        #     driver.post_image(i + 1)
+        # driver.post_content(content_list[i])
+
+        # driver.post_content(final_content)
         driver.post_href(coupang_url)
         driver.quit_frame()
+
+        print(os.getcwd())  # 현재 작업 디렉토리 확인
+        print(os.path.exists("1.jpg"))  # 파일 존재 여부 확인
 
         driver.click_posting()
         driver.post_public()
         wx.CallAfter(append_log, f"[{keyword[0]}]포스팅 완료")
 
         # 5-5. 다운받은 이미지 삭제
-        coupang.remove_images(len(image_urls))
+        # coupang.remove_images(len(image_urls))
         IF_FIRST = False
 
     # 작업 다 끝나면 버튼 다시 활성화, 쓰레드 종료
