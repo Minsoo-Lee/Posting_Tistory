@@ -198,7 +198,7 @@ def insert_script(content):
     driver.execute_script("arguments[0].dispatchEvent(new Event('change', { bubbles: true }));", editor)
     time.sleep(1)
 
-def post_image(index):
+def post_image(index, keyword):
     image_path = f"{index}.jpg"  # 실제 로컬 이미지 경로
     with open(image_path, "rb") as image_file:
         image_data = image_file.read()
@@ -207,9 +207,10 @@ def post_image(index):
     image_base64 = base64.b64encode(image_data).decode('utf-8')
 
     # 새로운 img 태그를 추가하여 기존 내용 유지
-    script = """
+    script = f"""
     var img = document.createElement('img');
     img.src = 'data:image/jpeg;base64,' + arguments[0];
+    img.alt = '{keyword}' + arguments[1];  // alt 속성 추가
     img.style.display = 'block';
     img.style.width = '400px';  // 가로 크기 조정
     img.style.height = 'auto';  // 세로 비율 유지
@@ -244,7 +245,7 @@ def click_posting():
 
 def post_public():
     driver.find_element(By.XPATH, "/html/body/div[5]/div/div/div/form/fieldset/div[2]/div/dl[1]/dd/div[1]/label/input").click()
-    time.sleep(1)
+    time.sleep(2)
     driver.find_element(By.XPATH, "/html/body/div[5]/div/div/div/form/fieldset/div[3]/div/button[2]").click()
     time.sleep(1)
 

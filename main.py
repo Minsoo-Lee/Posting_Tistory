@@ -99,7 +99,7 @@ def execute_thread():
         if IF_FIRST is False:
             driver.enter_url(posting_url)
         wx.CallAfter(append_log, "포스팅 화면 진입")
-        driver.select_category("JAVA")
+        driver.select_category("- + alt 속성 추가")
         # driver.select_category(category_input.Value)
 
         # 5-1. 쿠팡 API로 데이터 수신
@@ -110,7 +110,8 @@ def execute_thread():
         api_data = coupang.filter_products(keyword[0], coupang_response)          # 쿠팡 API로 상품 정보 먼저 긁어오기
         print(json.dumps(api_data, indent=4, ensure_ascii=False))
 
-        image_urls = coupang.download_images(api_data)
+        image_urls = coupang.download_images(api_data, keyword[0])
+        print(json.dumps(image_urls, indent=4, ensure_ascii=False))
         image_qty = len(image_urls)
         coupang_url = coupang_response['landingUrl']           # 제휴 url을 내부 메모리에 저장
         coupang.add_border(50, "blue", image_qty)               # 이미지에 테두리 추가
@@ -134,7 +135,7 @@ def execute_thread():
         i = 0
         for i in range(0, image_qty):
             driver.post_content(content_list[i])
-            driver.post_image(i + 1)
+            driver.post_image(i + 1, keyword[0])
         driver.post_content(content_list[i + 1])
         driver.post_content("<br><b>[" + keyword[0] + " 구매하기]</b><br>", False)
 

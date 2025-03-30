@@ -31,19 +31,27 @@
 2. 범용성을 높이기 위해 고객이 커스텀할 수 있는 요소를 추가  
    사진 및 이모티콘 위치, 이미지를 어떻게 가져올 것인지(unsplash / google custom / Stable diffusion 등)
 
-# 5. 주의사항 및 참고사항
+# 5. SEO 최적화 (이미지 최적화)
+1. 사진 용량: 100Kb 이하 (03.30)
+2. 사이즈: 800 ~ 1920px (03.30)
+3. alt 속성 추가: alt = '포스팅에 관련된 주제로 이름 지정'
+4. 대체 텍스트 삽입
+5. .webp 확장자 파일
+6. 부연설명과 관련된 내용으로 파일명 지정
+
+# 6. 주의사항 및 참고사항
 1. 쿠팡 상품 검색 시 API 콜 리밋은 1분에 50회
 2. 사진이 너무 겹치는 경우, 상품 상세 페이지에서 가져올 수 있는 방법 연구  
    (현재는 미리보기 사진만 가져와서 테두리 입힌 후 복붙)
 3. 로그인 실패 시 예외처리 (로그인을 다시 한다던가... 아니면 URL을 다시 접속한다던가...)
 
-# 6. 예외처리
+# 7. 예외처리
 1. 로그인 실패 시
 2. 카테고리 선택 시 존재하지 않는 카테고리를 선택 시도 -> 작업 자체를 살짝 엎을 필요가 있음
 
-# 7. 특이사항
+# 8. 특이사항
 1. 티스토리 open API는 현재 서비스 종료 (23년 12월 말 - 2월 말)  
    참고: https://notice.tistory.com/2664
 
-# 8. 레퍼런스
+# 9. 레퍼런스
 https://cafe.naver.com/fcbarcelonatip18/3521?art=ZXh0ZXJuYWwtc2VydmljZS1uYXZlci1zZWFyY2gtY2FmZS1wcg.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYWZlVHlwZSI6IkNBRkVfVVJMIiwiY2FmZVVybCI6ImZjYmFyY2Vsb25hdGlwMTgiLCJhcnRpY2xlSWQiOjM1MjEsImlzc3VlZEF0IjoxNzM5OTQyODkyMTIwfQ.VjotjCL2Di9Bl_iDZ5ZRuFq_hl3ueqmFO-o8QEvLtd4
