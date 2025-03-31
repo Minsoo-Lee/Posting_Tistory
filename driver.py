@@ -84,7 +84,7 @@ def select_category(category):
     # 실행 버튼 활성화 타임, 그리고 로직 일부 순환으로 예외처리를 마무리 할 것
     try:
         categories[category].click()
-        print("카테고리가 존재합니다.")
+        # print("카테고리가 존재합니다.")
     except:
         print("카테고리가 존재하지 않습니다.")
     time.sleep(1)

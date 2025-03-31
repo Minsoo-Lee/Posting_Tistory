@@ -109,7 +109,6 @@ def download_images(data, keyword):
                 if image.mode == "RGBA":
                     image = image.convert("RGB")  # RGB 모드로 변환
                 image.save(output, format="JPEG", quality=quality)
-                print(quality)
                 if output.tell() <= 80 * 1024 or quality <= 10:  # 80KB 이하 또는 품질이 너무 낮아질 경우
                     break
                 quality -= 5  # 품질을 점진적으로 낮춤
@@ -118,7 +117,7 @@ def download_images(data, keyword):
             with open(f"{index}.jpg", "wb") as file:
                 file.write(output.getvalue())
 
-            print(f"이미지 다운로드 및 변환 완료: {index}.jpg")
+            # print(f"이미지 다운로드 및 변환 완료: {index}.jpg")
             index += 1
         else:
             print("이미지 다운로드 실패, 상태 코드:", response.status_code)

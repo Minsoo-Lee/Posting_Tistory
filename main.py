@@ -105,20 +105,20 @@ def execute_thread():
         # 5-1. 쿠팡 API로 데이터 수신
         path = coupang.get_path(keyword[0], 10)
         coupang_response = coupang.get_response(path)
-        print(json.dumps(coupang_response, indent=4, ensure_ascii=False))
+        # print(json.dumps(coupang_response, indent=4, ensure_ascii=False))
 
         api_data = coupang.filter_products(keyword[0], coupang_response)          # 쿠팡 API로 상품 정보 먼저 긁어오기
-        print(json.dumps(api_data, indent=4, ensure_ascii=False))
+        # print(json.dumps(api_data, indent=4, ensure_ascii=False))
 
         image_urls = coupang.download_images(api_data, keyword[0])
-        print(json.dumps(image_urls, indent=4, ensure_ascii=False))
+        # print(json.dumps(image_urls, indent=4, ensure_ascii=False))
         image_qty = len(image_urls)
         coupang_url = coupang_response['landingUrl']           # 제휴 url을 내부 메모리에 저장
         coupang.add_border(50, "blue", image_qty)               # 이미지에 테두리 추가
 
         # 5-2. Gemini API로 글 생성
         response = gemini.get_response(keyword, image_qty)
-        print(keyword)
+        # print(keyword)
         wx.CallAfter(append_log, f"{response[0]}\n{response[1]}")
 
         title, content = response[0], response[1]
@@ -147,15 +147,15 @@ def execute_thread():
         driver.post_href(coupang_url)
         driver.quit_frame()
 
-        print(os.getcwd())  # 현재 작업 디렉토리 확인
-        print(os.path.exists("1.jpg"))  # 파일 존재 여부 확인
+        wx.CallAfter(append_log, "캡챠를 해결해주세요")
+        wx.CallAfter(time.sleep, 50)
 
         driver.click_posting()
         driver.post_public()
         wx.CallAfter(append_log, f"[{keyword[0]}]포스팅 완료")
 
         # 5-5. 다운받은 이미지 삭제
-        # coupang.remove_images(len(image_urls))
+        coupang.remove_images(len(image_urls))
         IF_FIRST = False
 
     # 작업 다 끝나면 버튼 다시 활성화, 쓰레드 종료
