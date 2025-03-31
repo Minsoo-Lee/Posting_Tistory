@@ -23,8 +23,8 @@ IF_FIRST = True
 def append_log(log):
     current_time = time.strftime("[%Y-%m-%d %H:%M:%S] ", time.localtime())
     # 내 환경에서 테스트 시에만 흰색
-    # color = wx.BLACK
-    color = wx.WHITE
+    color = wx.BLACK
+    # color = wx.WHITE
     if '[ERROR]' in log or '오답' in log:
         color = wx.RED
     if '작업이 모두 끝났습니다.' in log or '완료' in log:
@@ -74,11 +74,15 @@ def execute_thread():
     driver.open_tistory()
     wx.CallAfter(append_log, "로그인을 실행합니다.")
     driver.click_login()
-    driver.login("minsoo1101", "msLee9164@@")
+    driver.input_login("minsoo1101", "msLee9164@@")
     # driver.login(kakaoId_input.Value, kakaoPw_input.Value)
+    wx.CallAfter(append_log, "캡챠를 해결해주세요")
+    time.sleep(30)
+
+    driver.complete_login()
+
     wx.CallAfter(append_log, "로그인 완료")
     posting_url = driver.enter_posting()
-
 
     # 2. CSV 파일 읽어오기
     load_csv()
@@ -147,10 +151,12 @@ def execute_thread():
         driver.post_href(coupang_url)
         driver.quit_frame()
 
-        wx.CallAfter(append_log, "캡챠를 해결해주세요")
-        wx.CallAfter(time.sleep, 50)
 
         driver.click_posting()
+
+        wx.CallAfter(append_log, "캡챠를 해결해주세요")
+        time.sleep(60)
+
         driver.post_public()
         wx.CallAfter(append_log, f"[{keyword[0]}]포스팅 완료")
 
@@ -171,8 +177,6 @@ def execute(event):
     thread = threading.Thread(target=execute_thread)
     execute_button.Enable(False)  # 버튼 비활성화
     thread.start()
-
-
 
 # 전체 패널
 panel = wx.Panel(frame, wx.ID_ANY)

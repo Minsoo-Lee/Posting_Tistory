@@ -47,10 +47,16 @@ def click_login():
     element.click()
     time.sleep(1)
 
-def login(id, pw):
+def input_login(id, pw):
     driver.find_element(By.XPATH, "/html/body/div/div/div/main/article/div/div/form/div[1]/div/input").send_keys(id)
     driver.find_element(By.XPATH, "/html/body/div/div/div/main/article/div/div/form/div[2]/div/input").send_keys(pw)
-    driver.find_element(By.XPATH, "/html/body/div/div/div/main/article/div/div/form/div[4]/button[1]").click()
+    time.sleep(1)
+
+def complete_login():
+    try:
+        driver.find_element(By.XPATH, "/html/body/div/div/div/main/article/div/div/form/div[4]/button[1]").click()
+    except:
+        driver.find_element(By.XPATH, "/html/body/div[1]/div/div/main/article/div/div/form/div[5]/button[1]").click()
     time.sleep(5)
 
 def enter_url(posting_url):
