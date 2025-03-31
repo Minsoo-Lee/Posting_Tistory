@@ -52,6 +52,7 @@
 # 8. 특이사항
 1. 티스토리 open API는 현재 서비스 종료 (23년 12월 말 - 2월 말)  
    참고: https://notice.tistory.com/2664
+2. (03.30) 리캡차 발생... 갑자기 막혀버림...
 
 # 9. 레퍼런스
 https://cafe.naver.com/fcbarcelonatip18/3521?art=ZXh0ZXJuYWwtc2VydmljZS1uYXZlci1zZWFyY2gtY2FmZS1wcg.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYWZlVHlwZSI6IkNBRkVfVVJMIiwiY2FmZVVybCI6ImZjYmFyY2Vsb25hdGlwMTgiLCJhcnRpY2xlSWQiOjM1MjEsImlzc3VlZEF0IjoxNzM5OTQyODkyMTIwfQ.VjotjCL2Di9Bl_iDZ5ZRuFq_hl3ueqmFO-o8QEvLtd4

@@ -249,6 +249,15 @@ def post_public():
     driver.find_element(By.XPATH, "/html/body/div[5]/div/div/div/form/fieldset/div[3]/div/button[2]").click()
     time.sleep(1)
 
+def solve_captcha():
+    try:
+        driver.find_element(By.XPATH, "/html/body/div[2]/div[3]/div[1]/div/div/span/div[1]").click()
+        time.sleep(1)
+
+    except:
+        pass
+
+
 def align_center():
     driver.find_element(By.XPATH, "/html/body/div[1]/div/main/div/div[5]/div/div/div[1]/div/div/div/div/div/div[3]/div/div[2]/button").click()
     time.sleep(1)
