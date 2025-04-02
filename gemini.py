@@ -42,7 +42,7 @@ def get_response(keyword, n):
                     본문과 제목은 자연스럽게 유지하고, 사람이 쓴 것처럼 구조를 잘 배치해 줘야 해. 
                     제목 뒤에 [구분]이라는 구분자를 넣어주고, 제목과 본문 모두 마크다운 언어로 쓰지 말고 그냥 작성해 줘.
                     
-                    제목을 작성하고 나서는 150자 내외로 사람들의 관심을 끌 수 있는 핵심 문장들을 서론으로 적어 주고, 서론 다음에는 <br> 태그를 두 개 넣어줘.
+                    제목을 작성하고 나서는 공백 포함 150자 이내로 사람들의 관심을 끌 수 있는 핵심 문장들을 서론으로 적어 주고, 서론 다음에는 <br> 태그를 두 개 넣어줘.
                     서론이 끝나면 "쿠팡 활동의 일환으로 수수료를 받습니다." 라는 문장을 적고, 그 뒤에 <br> 태그를 두 개 적어줘
                     
                     그리고 본문에 줄바꿈 문자를 적절하게 써서 가독성을 높여주고 소제목은 {n}개만 작성해 줘. 소제목 뒤에는 [사진 삽입]이라는 구분자를 넣어줘.
@@ -60,7 +60,7 @@ def get_response(keyword, n):
 
     # outro = f"<br><br>[{keyword[0]} 구매하기]<br>"
     split_pcs = response.text.split("[구분]")
-    split_pcs[1] = split_pcs[0] + "<br>" + split_pcs[1].strip()
+    split_pcs[1] = split_pcs[0] + "<br><br>" + split_pcs[1].strip()
     # split_pcs[1] = split_pcs[0] + "<br>" + INTRO + split_pcs[1].strip()
     # split_pcs[1] = split_pcs[0] + "<br>" + INTRO + split_pcs[1].strip() + outro
     wait(1)
