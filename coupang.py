@@ -114,7 +114,7 @@ def download_images(data, keyword):
                 quality -= 5  # 품질을 점진적으로 낮춤
 
             # 최종 이미지 저장
-            with open(f"{index}.jpg", "wb") as file:
+            with open(f"{keyword}_{index}.jpg", "wb") as file:
                 file.write(output.getvalue())
 
             # print(f"이미지 다운로드 및 변환 완료: {index}.jpg")
@@ -123,10 +123,10 @@ def download_images(data, keyword):
             print("이미지 다운로드 실패, 상태 코드:", response.status_code)
     return image_urls
 
-def add_border(size, color, length):
+def add_border(size, color, length, keyword):
     for index in range(1, length + 1):
         # 이미지 열기
-        image = Image.open(f"{index}.jpg")  # 저장한 이미지 파일 경로
+        image = Image.open(f"{keyword}_{index}.jpg")  # 저장한 이미지 파일 경로
 
         # 테두리 크기 및 색상 설정
         border_size = size  # 원하는 테두리 두께
@@ -136,12 +136,12 @@ def add_border(size, color, length):
         bordered_image = ImageOps.expand(image, border=border_size, fill=border_color)
 
         # 결과 저장
-        bordered_image.save(f"{index}.jpg")
+        bordered_image.save(f"{keyword}_{index}.jpg")
         wait(1)
 
-def remove_images(length):
+def remove_images(length, keyword):
     for index in range(1, length + 1):
-        file_path = f"{index}.jpg"
+        file_path = f"{keyword}_{index}.jpg"
         os.remove(file_path)
         wait(1)
 

@@ -76,8 +76,8 @@ def execute_thread():
     driver.click_login()
     driver.input_login("minsoo1101", "msLee9164@@")
     # driver.login(kakaoId_input.Value, kakaoPw_input.Value)
-    wx.CallAfter(append_log, "캡챠를 해결해주세요")
-    time.sleep(30)
+    # wx.CallAfter(append_log, "캡챠를 해결해주세요")
+    # time.sleep(30)
 
     driver.complete_login()
 
@@ -103,7 +103,7 @@ def execute_thread():
         if IF_FIRST is False:
             driver.enter_url(posting_url)
         wx.CallAfter(append_log, "포스팅 화면 진입")
-        driver.select_category("- + alt 속성 추가")
+        driver.select_category("- + 150자 서론 추가")
         # driver.select_category(category_input.Value)
 
         # 5-1. 쿠팡 API로 데이터 수신
@@ -118,7 +118,7 @@ def execute_thread():
         # print(json.dumps(image_urls, indent=4, ensure_ascii=False))
         image_qty = len(image_urls)
         coupang_url = coupang_response['landingUrl']           # 제휴 url을 내부 메모리에 저장
-        coupang.add_border(50, "blue", image_qty)               # 이미지에 테두리 추가
+        coupang.add_border(50, "blue", image_qty, keyword[0])               # 이미지에 테두리 추가
 
         # 5-2. Gemini API로 글 생성
         response = gemini.get_response(keyword, image_qty)
@@ -155,13 +155,13 @@ def execute_thread():
         driver.click_posting()
 
         wx.CallAfter(append_log, "캡챠를 해결해주세요")
-        time.sleep(60)
+        time.sleep(120)
 
-        driver.post_public()
+        # driver.post_public()
         wx.CallAfter(append_log, f"[{keyword[0]}]포스팅 완료")
 
         # 5-5. 다운받은 이미지 삭제
-        coupang.remove_images(len(image_urls))
+        coupang.remove_images(len(image_urls), keyword[0])
         IF_FIRST = False
 
     # 작업 다 끝나면 버튼 다시 활성화, 쓰레드 종료

@@ -205,7 +205,7 @@ def insert_script(content):
     time.sleep(1)
 
 def post_image(index, keyword):
-    image_path = f"{index}.jpg"  # 실제 로컬 이미지 경로
+    image_path = f"{keyword}_{index}.jpg"  # 실제 로컬 이미지 경로
     with open(image_path, "rb") as image_file:
         image_data = image_file.read()
 
