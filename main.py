@@ -103,7 +103,7 @@ def execute_thread():
         if IF_FIRST is False:
             driver.enter_url(posting_url)
         wx.CallAfter(append_log, "포스팅 화면 진입")
-        driver.select_category("- + 150자 서론 추가")
+        driver.select_category("- 사진 + 150자 제거")
         # driver.select_category(category_input.Value)
 
         # 5-1. 쿠팡 API로 데이터 수신
@@ -153,8 +153,6 @@ def execute_thread():
 
 
         driver.click_posting()
-
-        wx.CallAfter(append_log, "캡챠를 해결해주세요")
         time.sleep(120)
 
         # driver.post_public()

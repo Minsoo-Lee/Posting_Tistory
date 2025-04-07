@@ -11,31 +11,10 @@ def init_gemini():
     genai.configure(api_key=gemini_key)
     model = genai.GenerativeModel('gemini-1.5-pro-latest')
 
-    # 모델 찾기
-    # models = genai.list_models()
-    # for model in models:
-    #     print(f"Model: {model.name}")
-    #     print(f"Description: {model.description}")
-    #     print(f"Supported Generation Methods: {model.supported_generation_methods}")
-    #     print("-" * 20)
-
-
 def get_response(keyword, n):
     global model
     response = None
     while response is None:
-        # 제품 상세 글 작성 시
-        # response = model.generate_content(f"""
-        #             내가 너에게 제품을 알려줄거야. 그 제품에 대해서 자세하게 설명을 해줘.
-        #             제목은 키워드 그대로 쓰지 말고, 제품을 잘 어필할 수 있었으면 좋겠어.
-        #             본문과 제목은 자연스럽게 유지하고, 사람이 쓴 것처럼 구조를 잘 배치해 줘야 해.
-        #             내용은 한 2000자 정도였으면 좋겠어.
-        #             그리고 제목 뒤에 [구분]이라는 구분자를 넣어주고, 제목을 마크다운 언어로 쓰지 말고 그냥 작성해 줘.
-        #             그리고 본문에 줄바꿈 문자를 적절하게 써서 가독성을 높여줘.
-        #
-        #             자, 이제 너가 설명할 제품은 {keyword}야.
-        #         """)
-
         response = model.generate_content(f"""
                     내가 너에게 제품을 알려줄거야. 너는 그 제품을 홍보하는 마케터야.
                     제목은 키워드 그대로 쓰지 말고, 제품을 잘 어필할 수 있었으면 좋겠어. 그리고 제목은 반드시 제품 이름으로 시작해 줘.
@@ -58,11 +37,8 @@ def get_response(keyword, n):
                     자, 이제 너가 설명할 제품은 {keyword}야.
                 """)
 
-    # outro = f"<br><br>[{keyword[0]} 구매하기]<br>"
     split_pcs = response.text.split("[구분]")
     split_pcs[1] = split_pcs[0] + "<br><br>" + split_pcs[1].strip()
-    # split_pcs[1] = split_pcs[0] + "<br>" + INTRO + split_pcs[1].strip()
-    # split_pcs[1] = split_pcs[0] + "<br>" + INTRO + split_pcs[1].strip() + outro
     wait(1)
 
     return split_pcs
