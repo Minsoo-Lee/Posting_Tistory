@@ -277,3 +277,12 @@ def make_final_content(content_list, length, path):
     for i in range(0, length):
         result += (content_list[i] + f'<br><img src="{path}/{i + 1}.jpg" alt="로컬 이미지"><br>')
     return result + content_list[i+ 1]
+
+# SEO 체크용 함수
+def search_posting(title):
+    # 검색창 찾기
+    search_box = driver.find_element(By.XPATH, "/html/body/div[1]/div[3]/form/div[1]/div[1]/div[1]/div[1]/div[2]/textarea")
+
+    # 검색어 입력 + 엔터키
+    search_box.send_keys(title + Keys.RETURN);
+    time.sleep(10)

@@ -176,6 +176,22 @@ def execute(event):
     execute_button.Enable(False)  # 버튼 비활성화
     thread.start()
 
+def check(event):
+    driver.init_chrome()
+    titles = [
+        "정관장 홍삼정: 면역력 강화와 활력 충전을 한 번에!",
+        "황제의 기품을 담은 종근당 황제 침향단",
+        "종근당 침향환 골드: 황제의 비밀, 당신의 건강에 드리는 선물",
+        "락토핏 골드, 온 가족 장 건강 지킴이",
+        "고려홍삼정 365 스틱: 당신의 하루를 채워줄 진짜 활력",
+        "오로나민C: 당신의 하루에 생기를 불어넣는 비타민C 드링크!",
+        "광동 배도라지 쌍화, 환절기 건강 지킴이",
+        "데이퓨어로 매일 빛나는 피부, 꿈꿔본 적 있나요?"
+    ]
+    for title in titles:
+        driver.enter_url("https://www.google.com")
+        driver.search_posting(title)
+
 # 전체 패널
 panel = wx.Panel(frame, wx.ID_ANY)
 panel_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -233,6 +249,10 @@ execute_button = wx.Button(left_panel, wx.ID_ANY, "작업 수행", size=(330, 30
 execute_button.Bind(wx.EVT_BUTTON, execute)
 execute_button.Enable(True)
 
+check_button = wx.Button(left_panel, wx.ID_ANY, "SEO Check", size=(330, 30))
+check_button.Bind(wx.EVT_BUTTON, check)
+check_button.Enable(True)
+
 left_sizer.Add(kakaoId_sizer, 0, wx.ALL, 10)
 left_sizer.Add(kakaoPw_sizer, 0, wx.ALL, 10)
 left_sizer.Add(category_sizer, 0, wx.ALL, 10)
@@ -241,6 +261,7 @@ left_sizer.Add(csv_listbox, 1, wx.LEFT | wx.RIGHT, 10)  # proportion을 1로 설
 # left_sizer.Add(pw_sizer, 0, wx.ALL, 10)
 # left_sizer.Add(url_sizer, 0, wx.ALL, 10)
 left_sizer.Add(execute_button, 0, wx.ALL, 10)
+left_sizer.Add(check_button, 0, wx.ALL, 10)
 left_panel.SetSizer(left_sizer)
 
 # 구분선
