@@ -188,9 +188,12 @@ def check(event):
         "광동 배도라지 쌍화, 환절기 건강 지킴이",
         "데이퓨어로 매일 빛나는 피부, 꿈꿔본 적 있나요?"
     ]
-    for title in titles:
+    is_first = True;
+
+    for x in range(1, len(titles)):
         driver.enter_url("https://www.google.com")
-        driver.search_posting(title)
+        driver.search_posting(titles[x], is_first)
+        is_first = False
 
 # 전체 패널
 panel = wx.Panel(frame, wx.ID_ANY)
